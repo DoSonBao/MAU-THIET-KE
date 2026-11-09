@@ -25,7 +25,7 @@ button:hover{filter:brightness(.94)}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
 .card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 5px 20px #18304714}
 .image{position:relative;display:flex;justify-content:center;align-items:center;cursor:zoom-in;background:#e6eef4;height:360px;overflow:hidden}
-.image img{height:100%;max-width:100%;object-fit:contain;display:block}
+.image.img-missing::before{content:"Ảnh chưa được tải lên: kiểm tra thư mục images/";position:absolute;top:42%;left:12%;right:12%;text-align:center;color:#8d3f32;font-weight:700;background:#fff6f0;padding:14px;border-radius:10px}.image img{height:100%;max-width:100%;object-fit:contain;display:block}
 .overlay-top{position:absolute;inset:12px 12px auto 12px;display:flex;justify-content:space-between;gap:10px;pointer-events:none;flex-wrap:wrap}
 .pill{background:rgba(12,26,41,.82);color:#fff;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700;backdrop-filter:blur(3px);box-shadow:0 2px 8px rgba(0,0,0,.18)}
 .pill.secondary{background:rgba(33,104,183,.88)}
@@ -133,7 +133,7 @@ function cardTemplate(x){
   const c=cost(x); const s=specs(x);
   return `<article class="card">
     <div class="image" data-open="${x.n-1}">
-      <img loading="lazy" src="${x.src}" alt="${x.title}">
+      <img loading="lazy" src="${x.src}" alt="${x.title}" onerror="this.onerror=null;this.style.display='none';this.parentElement.classList.add('img-missing');">
       <div class="overlay-top">
         <div class="pill">🎨 Màu sơn: ${s.paintName}</div>
         <div class="pill secondary">🏠 La phông: ${x.type}</div>
@@ -162,7 +162,7 @@ function cardTemplate(x){
 function show(p){
   sortItems(); page=Math.min(Math.max(0,p),count()-1);
   $('pageTitle').textContent='Trang '+(page+1)+' / '+count()+' · vị trí '+(page*PER+1)+'–'+Math.min(ordered.length,(page+1)*PER);
-  $('current').textContent='Trang '+(page+1)+' / '+count;
+  $('current').textContent='Trang '+(page+1)+' / '+count();
   $('pages').innerHTML=Array.from({length:count()},(_,i)=>`<button class="${i===page?'active':''}" data-page="${i}">${i+1}</button>`).join('');
   $('pages').querySelectorAll('button').forEach(b=>b.onclick=()=>show(+b.dataset.page));
   $('grid').innerHTML=ordered.slice(page*PER,(page+1)*PER).map(cardTemplate).join('');
